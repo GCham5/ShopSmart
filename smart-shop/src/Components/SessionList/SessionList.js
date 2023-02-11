@@ -1,7 +1,12 @@
+import * as React from 'react';
+import Stack from '@mui/material/Stack';
+import { DomainDropdown } from './DomainDropdown';
+
+
 export function SessionList(props) {
   return (
-    <div style={{flexGrow: 1}}>
-      <h1>SessionList</h1>
-    </div>
+    <Stack spacing={0}>
+      <DomainDropdown/>
+    </Stack>
   )
 }
