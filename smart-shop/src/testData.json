@@ -1,5 +1,6 @@
 {
-    "domain":{
+    "domains":
+    [{
         "id":"1",
         "domain":"https://www.walmart.ca",
         "sessions":[
@@ -2374,8 +2375,8 @@
                     "id":"1",
                     "browser":"Chromium"
                 },
-                "bWidth":"1440"
+                "bWidth":809
             }
         ]
-    }
+    }]
 }

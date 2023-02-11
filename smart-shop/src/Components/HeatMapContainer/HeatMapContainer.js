@@ -9,7 +9,7 @@ export function HeatMapContainer(props) {
           Subdomain Here
         </div>
         <div>
-          <HeatMap></HeatMap>
+          <HeatMap mousePos={props.pagesData[0].mousePos} bWidth={props.bWidth}></HeatMap>
         </div>
         <div>
           <button>Subdomain Btn</button>
