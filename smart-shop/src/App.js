@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import { SessionList } from './Components/SessionList/SessionList';
 import { HeatMapContainer } from './Components/HeatMapContainer/HeatMapContainer';
+import test from './Services/test.js';
 
 function App() {
   return (
