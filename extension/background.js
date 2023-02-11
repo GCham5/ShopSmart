@@ -1,15 +1,19 @@
 const tabChange = (tabId, event) => {
     console.log(event)
-    chrome.scripting.insertCSS({
-        target: {tabId: tabId},
-        files: ["./css/foreground.css"]
-    })
-    .then(() => {
-        chrome.scripting.executeScript({
-            target: { tabId: tabId },
-            files: ["./foreground.js"]
-        })
-    }).catch(err => console.log(err));             
+    chrome.tabs.sendMessage(tabId, {message: "tofg_doyouexist"}, (resp) => {
+        if (chrome.runtime.lastError) {
+            chrome.scripting.insertCSS({
+                target: {tabId: tabId},
+                files: ["./css/foreground.css"]
+            })
+            .then(() => {
+                chrome.scripting.executeScript({
+                    target: { tabId: tabId },
+                    files: ["./foreground.js"]
+                })
+            }).catch(err => console.log(err));
+        }
+    })             
 }
 
 //gone use this one for changing the tab b/w existing tabs (includes when u a close a tab and u auto go to another tab)
