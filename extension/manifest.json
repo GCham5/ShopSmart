@@ -22,7 +22,7 @@
       }
   },
   "web_accessible_resources": [{
-    "resources": [ "images/adminUser.png", "images/icon-32x32.png"],
+    "resources": ["images/icon-32x32.png"],
     "matches": [ "http://*/*", "https://*/*" ]
   }],
   "options_page": "./html/options.html",
