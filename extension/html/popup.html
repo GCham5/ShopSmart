@@ -1,17 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      body {
-        width: 200px;
-        height: 150px;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../css/popup.css">
   </head>
   <body>
-    <h1>SmartShop</h1>
-    <p>Get 10% off</p>
-    <button id="btn">Click me</button>
+    <div class="header-container">
+      <img src="../images/icon-32x32.png" alt="Logo" class="logo">
+      <h1 class="header">ShopSmart</h1>
+    </div>
+    <label for="userType">Please select a user type</label>
+      <select name="userType" id="userType">  
+        <option value="customer">Customer</option>
+        <option value="business">Business</option>
+    </select>
+    <div id="customer" style="display: block;">
+      <p>Get 10% off</p>
+      <button id="btn">Click me</button>
+    </div>
+    <div id="business" style="display: none;">This is option 2</div>
+
+    <script src="../popup.js"></script>
+    
   </body>
   <script src="../popup.js"></script>
 </html>

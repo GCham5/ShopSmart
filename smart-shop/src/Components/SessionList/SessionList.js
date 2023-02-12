@@ -1,7 +1,13 @@
+import * as React from 'react';
+import Stack from '@mui/material/Stack';
+import { DomainDropdown } from './DomainDropdown';
+import Test from '../../../testData.json';
+
 export function SessionList(props) {
   return (
-    <div style={{flexGrow: 1}}>
-      <h1>SessionList</h1>
-    </div>
+    <Stack spacing={0}>
+      Test.map()
+      <DomainDropdown/>
+    </Stack>
   )
 }
