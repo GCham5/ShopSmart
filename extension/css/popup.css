@@ -3,7 +3,18 @@ body {
     background-color: #ce1a0a;
     color: white;
     width: 200px;
-    height: 150px;
+    height: auto;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-bottom: 25px;
+  }
+
+  p {
+      font-size: 16px;
+  }
+
+  label {
+    font-size: 16px;
   }
 
   .header-container {
@@ -15,3 +26,25 @@ body {
     height: 50px;
     margin-right: 10px;
   }
+
+  .coupon-code {
+    background-color: #eec753;
+    color: #333;
+    padding: 10px;
+    text-align: center;
+    border-radius: 5px;
+    width: 150px;
+    margin: 20px auto;
+  }
+  
+  .code {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .description {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+
+  
