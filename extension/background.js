@@ -31,7 +31,7 @@ getDataFromDb = (tabId, hostname, pathname) => {
             domain.sessions.forEach(session => {
                 session.pages.forEach(page => {
                     if (page.subdomain === pathname) {
-                        allDataForActiveTab.push({id: domain.id, bWidth: session.bWidth, mousePos: page.mousePos})
+                        allDataForActiveTab.push({sessionId: domain.id, pageId: page.id, bWidth: session.bWidth, mousePos: page.mousePos})
                     }
                 })
             })
