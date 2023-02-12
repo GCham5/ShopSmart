@@ -1,6 +1,7 @@
 let curActiveHostname = "";
 let curActiveSubdomain = ""
 let curActiveMouseMoves = {}
+let curActiveActions = {}
 
 const startNewPage = (hostname,pathname) => {
     curActiveHostname = hostname
@@ -18,6 +19,7 @@ const startNewPage = (hostname,pathname) => {
     }
     path = curActiveHostname+curActiveSubdomain;
     curActiveMouseMoves[path] = []
+    curActiveActions[path] = []
 }
 
 getDataFromDb = (tabId, hostname, pathname) => {
@@ -29,7 +31,7 @@ getDataFromDb = (tabId, hostname, pathname) => {
             domain.sessions.forEach(session => {
                 session.pages.forEach(page => {
                     if (page.subdomain === pathname) {
-                        allDataForActiveTab.push({id: domain.id, bWidth: session.bWidth, mousePos: page.mousePos})
+                        allDataForActiveTab.push({sessionId: domain.id, pageId: page.id, bWidth: session.bWidth, mousePos: page.mousePos})
                     }
                 })
             })
@@ -48,6 +50,7 @@ const tabChange = (tabId, url) => {
         if (chrome.runtime.lastError) {
             if (hostname != curActiveHostname) { 
                 //save to db
+                curActiveActions = []
                 curActiveMouseMoves = {}
             }
             chrome.scripting.insertCSS({
@@ -62,11 +65,13 @@ const tabChange = (tabId, url) => {
                 .then(() => {
                     chrome.tabs.sendMessage(tabId, { message: "tofg_start_recording"})
                     getDataFromDb(tabId,hostname,pathname)
+
                 })
             }).catch(err => console.log(err));
         } else {
             if (hostname != curActiveHostname) { 
                 //save to db
+                curActiveActions = []
                 curActiveMouseMoves = {}
             }
             chrome.tabs.sendMessage(tabId, { message: "tofg_start_recording"})
@@ -97,5 +102,8 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message === "tobg_mousemovedata") {
         curActiveMouseMoves[curActiveHostname+curActiveSubdomain].push(request.payload.mousePos)
+    } else if (request.message == "tobg_action") {
+        console.log(request.payload)
+        curActiveActions[curActiveHostname+curActiveSubdomain].push(request.payload)
     }
 });
