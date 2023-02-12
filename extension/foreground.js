@@ -35,7 +35,7 @@ document.body.addEventListener('click', (e) => {
 
 
 const drawHeatMapSquare = (ctx, x, y) => {
-    const col = Math.floor(x/gridSize)
+    const col = Math.floor((x/(sessionDataforPage.bWidth/window.innerWidth))/gridSize)
     const row = Math.floor(y/gridSize)
     ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
     ctx.fillRect(col*gridSize, row*gridSize, gridSize, gridSize);
