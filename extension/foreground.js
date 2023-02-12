@@ -34,14 +34,14 @@ document.body.addEventListener('click', (e) => {
 })
 
 
-const drawHeatMapSquare = (ctx, x, y) => {
-    const col = Math.floor((x/(sessionDataforPage.bWidth/window.innerWidth))/gridSize)
+const drawHeatMapSquare = (ctx, x, y, bWidth) => {
+    const col = Math.floor((x/(bWidth/window.innerWidth))/gridSize)
     const row = Math.floor(y/gridSize)
     ctx.fillStyle = "rgba(255, 0, 0, 0.1)";
     ctx.fillRect(col*gridSize, row*gridSize, gridSize, gridSize);
 };
 
-generateHeatMap = () => {
+generateHeatMap = (sessionId, pageId) => {
     const canvas = document.createElement('CANVAS')
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -49,10 +49,15 @@ generateHeatMap = () => {
     canvas.style.top = "0";
     canvas.style.zIndex="99999999";
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = "black";
-    sessionDataforPage.mousePos.forEach(mousePos => {
-        drawHeatMapSquare(ctx,mousePos[0], mousePos[1])
+
+    const relevantSessionPageData = sessionDataforPage.find(sessionPageData => sessionPageData.sessionId == sessionId && sessionPageData.pageId === pageId)
+
+    relevantSessionPageData.mousePos.forEach(mousePos => {
+        drawHeatMapSquare(ctx,mousePos[0], mousePos[1], relevantSessionPageData.bWidth)
     })
+
+    // ctx.fillStyle="black";
+    // ctx.fillRect(0,0,500,500)
     document.getElementsByTagName('body')[0].appendChild(canvas)
 
 }
@@ -73,17 +78,23 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             clearInterval(mouseMonitorInterval)
         }, 120000)
     } else if (request.message === "tofg_sessiondataforpage") {
-        sessionDataforPage = request.payload.sessionDataforPage[0];
+        sessionDataforPage = request.payload.sessionDataforPage;
     } else if (request.message === "tofg_gettestdata") {
         sendResponse(localStorage.getItem('testData'))
     } else if (request.message == "tofg_generateheatmap") {
         if(!heatmapactive) {
             heatmapactive = true
-            generateHeatMap();
+            generateHeatMap(request.payload.sessionId, request.payload.pageId);
         } else {
             const canvas = document.getElementsByTagName('canvas')[0]
             canvas.parentElement.removeChild(canvas)
             heatmapactive = false
         }
+    } else if (request.message === "tofg_getallsessionpageids") {
+        const sessionPageIds = []
+        sessionDataforPage.forEach(sessionPageData => {
+            sessionPageIds.push({sessionId: sessionPageData.sessionId, pageId: sessionPageData.pageId})
+        })
+        sendResponse({sessionPageIds: sessionPageIds})
     }
-})
+ })

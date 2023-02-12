@@ -4027,31 +4027,54 @@ console.log(data)
 //   .then(response => response.json())
 //   .then(data => {
 //     console.log(data);
-//   });
+//   })
 
-function generateCards(data) {
-  let cardContainer = document.querySelector("#card-container");
-  for (let i = 0; i < data.length; i++) {
-    console.log(data[i])
-    for (let y = 0; y < data[i].sessions.length; y++) {
-      console.log(data[i].sessions[y])
-      for (let x = 0; x < data[i].sessions[y].pages.length; x++) {
-        const button = document.createElement('button');
-        button.innerHTML = 'Session: ' + data[i].sessions[y].id + ' Page: ' + data[i].sessions[y].pages[x].id
-        button.setAttribute('data-value', data[i].value);
-        button.classList.add('data-button');
-        button.addEventListener('click', ()=>{
-          chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-              if (/^http/.test(tabs[0].url)) {
-                  chrome.tabs.sendMessage(tabs[0].id, {message: "tofg_generateheatmap"})
-              }
-         })
-      });
-        cardContainer.appendChild(button); 
-      }
+
+chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+    if (/^http/.test(tabs[0].url)) {
+        chrome.tabs.sendMessage(tabs[0].id, {message: "tofg_getallsessionpageids"}, (resp) => {
+            console.log(resp)
+            let cardContainer = document.querySelector("#card-container");
+            resp.sessionPageIds.forEach(sessionPageId => {
+                const button = document.createElement('button');
+                button.innerHTML = 'Session: ' + sessionPageId.sessionId + ' Page: ' + sessionPageId.pageId
+                button.classList.add('data-button');
+                button.addEventListener('click', ()=>{
+                    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+                        if (/^http/.test(tabs[0].url)) {
+                            chrome.tabs.sendMessage(tabs[0].id, {message: "tofg_generateheatmap", payload: {sessionId: sessionPageId.sessionId, pageId:sessionPageId.pageId}})
+                        }
+                   })
+                })
+                cardContainer.appendChild(button); 
+            })  
+        })
     }
-  }
-}
+});
+
+// function generateCards(data) {
+//   let cardContainer = document.querySelector("#card-container");
+//   for (let i = 0; i < data.length; i++) {
+//     console.log(data[i])
+//     for (let y = 0; y < data[i].sessions.length; y++) {
+//       console.log(data[i].sessions[y])
+//       for (let x = 0; x < data[i].sessions[y].pages.length; x++) {
+//         const button = document.createElement('button');
+//         button.innerHTML = 'Session: ' + data[i].sessions[y].id + ' Page: ' + data[i].sessions[y].pages[x].id
+//         button.setAttribute('data-value', data[i].value);
+//         button.classList.add('data-button');
+//         button.addEventListener('click', ()=>{
+//           chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+//               if (/^http/.test(tabs[0].url)) {
+//                   chrome.tabs.sendMessage(tabs[0].id, {message: "tofg_generateheatmap"})
+//               }
+//          })
+//       });
+//         cardContainer.appendChild(button); 
+//       }
+//     }
+//   }
+// }
 
 selectUserTypeInput.addEventListener("change", function() {
     customerView.style.display = "none";
@@ -4063,18 +4086,17 @@ selectUserTypeInput.addEventListener("change", function() {
       break;
     case "business":
         businessView.style.display = "block";
-        generateCards(data.domains);
       break;
   }
 });
 
-document.getElementById("btn").addEventListener('click', ()=>{
-    chrome.tabs.query({active: true, currentWindow: true}, tabs => {
-        if (/^http/.test(tabs[0].url)) {
-            chrome.tabs.sendMessage(tabs[0].id, {message: "tofg_generateheatmap"})
-        }
-   })
-});
+// document.getElementById("btn").addEventListener('click', ()=>{
+//     chrome.tabs.query({active: true, currentWindow: true}, tabs => {
+//         if (/^http/.test(tabs[0].url)) {
+//             chrome.tabs.sendMessage(tabs[0].id, {message: "tofg_generateheatmap"})
+//         }
+//    })
+// });
 
 
 
