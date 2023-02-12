@@ -22,14 +22,15 @@
       }
   },
   "web_accessible_resources": [{
-    "resources": ["images/icon-32x32.png"],
+    "resources": ["images/icon-32x32.png","./testData.json"],
     "matches": [ "http://*/*", "https://*/*" ]
   }],
   "options_page": "./html/options.html",
   "permissions": [
       "activeTab",
       "scripting",
-      "tabs"
+      "tabs",
+      "storage"
   ],
   "host_permissions": [
       "<all_urls>"

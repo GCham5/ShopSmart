@@ -5,20 +5,37 @@ let curActiveMouseMoves = {}
 const startNewPage = (hostname,pathname) => {
     curActiveHostname = hostname
     curActiveSubdomain = pathname
-
     let path = "";
 
     if (!Object.keys(curActiveMouseMoves).includes(hostname+pathname+"_#$0")) {
         curActiveSubdomain += '_#$0';
-        path = curActiveHostname+curActiveSubdomain;
     } else {
         const allPathsWithSameHostAndSubdomainInCurrentSession = Object.keys(curActiveMouseMoves).filter(key => key.includes(pathname)).sort()
         const hostAndSubdomainLastPage = allPathsWithSameHostAndSubdomainInCurrentSession[allPathsWithSameHostAndSubdomainInCurrentSession.length-1]
-        const lastPage = hostAndSubdomainLastPage.substring(hostAndSubdomainLastPage.lastIndexOf('#$')+2,)
-        path = hostAndSubdomainLastPage.substring(0,hostAndSubdomainLastPage.lastIndexOf('#$')-1)+"_#$"+(parseInt(lastPage)+1).toString()
+        const lastPageSubdomain = hostAndSubdomainLastPage.substring(hostAndSubdomainLastPage.indexOf(curActiveHostname)+curActiveHostname.length,)
+        const lastPageNumber = parseInt(lastPageSubdomain.substring(lastPageSubdomain.lastIndexOf("_#$")+3,))
+        curActiveSubdomain = lastPageSubdomain.substring(0,lastPageSubdomain.lastIndexOf("_#$"))+"_#$"+(lastPageNumber+1).toString()
     }
+    path = curActiveHostname+curActiveSubdomain;
     curActiveMouseMoves[path] = []
+}
 
+getDataFromDb = (tabId, hostname, pathname) => {
+    allDataForActiveTab = []
+    chrome.tabs.sendMessage(tabId, {message: "tofg_gettestdata"}, (resp) => {
+        const testData = JSON.parse(resp);
+        const matchingDomains = testData.domains.filter(domain => domain.domain === hostname);
+        matchingDomains.forEach(domain => {
+            domain.sessions.forEach(session => {
+                session.pages.forEach(page => {
+                    if (page.subdomain === pathname) {
+                        allDataForActiveTab.push({id: domain.id, bWidth: session.bWidth, mousePos: page.mousePos})
+                    }
+                })
+            })
+        })
+        chrome.tabs.sendMessage(tabId, {message: "tofg_sessiondataforpage", payload: {sessionDataforPage: allDataForActiveTab}})
+    })
 }
 
 const tabChange = (tabId, url) => {
@@ -44,6 +61,7 @@ const tabChange = (tabId, url) => {
                 })
                 .then(() => {
                     chrome.tabs.sendMessage(tabId, { message: "tofg_start_recording"})
+                    getDataFromDb(tabId,hostname,pathname)
                 })
             }).catch(err => console.log(err));
         } else {
@@ -52,6 +70,7 @@ const tabChange = (tabId, url) => {
                 curActiveMouseMoves = {}
             }
             chrome.tabs.sendMessage(tabId, { message: "tofg_start_recording"})
+            getDataFromDb(tabId,hostname,pathname)
         }
 
         startNewPage(hostname, pathname)
@@ -77,6 +96,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.message === "tobg_mousemovedata") {
-        console.log(request.payload) //this is where we update the curActiveMouseMoves
+        curActiveMouseMoves[curActiveHostname+curActiveSubdomain].push(request.payload.mousePos)
     }
 });
